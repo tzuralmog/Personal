@@ -15,7 +15,7 @@ public class Sudoko {
         greenMenuBar.setBackground(new Color(154, 165, 127));
         greenMenuBar.setPreferredSize(new Dimension(200, 20));
 
-        JLabel emptyLabel = new JLabel("");
+        JLabel emptyLabel = new JLabel("Base");
         emptyLabel.setPreferredSize(new Dimension(175, 100));
         frame.setJMenuBar(greenMenuBar);
         frame.getContentPane().add(emptyLabel, BorderLayout.CENTER);
