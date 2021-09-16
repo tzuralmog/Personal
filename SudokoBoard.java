@@ -21,7 +21,7 @@ public class SudokoBoard {
             // for (int j = 0; j < board[i].length; j++) {
             //     System.out.print("+-");
             // }
-            // System.out.println("+");
+            System.out.println("+-+-+-+-+-+-+-+-+-+");
         }
     }
 }
