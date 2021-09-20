@@ -83,6 +83,7 @@ public class SudokoBoard {
         }
     }
 
+    // checks if valid, not if solvable
     public boolean isValid() {
         for (int i = 0; i < cols; i++) {
             for (int j = 0; j < rows; j++) {
@@ -116,6 +117,10 @@ public class SudokoBoard {
             }
         }
         return true;
+    }
+    // Todo:
+    public boolean isSolvable() {
+        return false;
     }
 
     public void generateValid() {
