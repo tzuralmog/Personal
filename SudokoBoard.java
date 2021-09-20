@@ -121,17 +121,17 @@ public class SudokoBoard {
             possibleSolutions.add(7);
             possibleSolutions.add(8);
             possibleSolutions.add(9);
-            // check to see if number have already ben used
+            // check to see if number has already been used
             for (int k = 0; k < cols; k++) {
                 // todo: make it so it remove the number, not the index of the array
                 // EX: remove the number 6, not the 6th element
-                possibleSolutions.remove(board[k][y]);
-                possibleSolutions.remove(board[x][k]);
+                possibleSolutions.remove(Integer.valueOf(board[k][y]));
+                possibleSolutions.remove(Integer.valueOf(board[x][k]));
             }
             // checks uniqness in group.
             for (int k = x / 3; k < groupSize; k++) {
                 for (int l = y / 3; l < groupSize; l++) {
-                    possibleSolutions.remove(board[k][l]);
+                    possibleSolutions.remove(Integer.valueOf(board[k][l]));
                 }
             }
             // if no solution is possible return false to start again
@@ -142,7 +142,7 @@ public class SudokoBoard {
             while (possibleSolutions.size() != 0) {
                 // gets random number from possible solutions
                 int tempSol = possibleSolutions.get((int) (Math.random() * possibleSolutions.size()));
-                possibleSolutions.remove(tempSol);
+                possibleSolutions.remove(Integer.valueOf(tempSol));
                 board[x][y] = tempSol;
                 if (generateValidRecursive(destX, destY)) {
                     return true;
@@ -150,7 +150,7 @@ public class SudokoBoard {
             }
             return false;
         }
-        System.out.println(x + " " + y);
+        System.out.println(x + " " + y+ " " + board[x][y]);
         return generateValidRecursive(destX, destY);
 
     }
