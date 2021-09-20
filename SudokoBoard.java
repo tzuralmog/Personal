@@ -10,8 +10,14 @@ public class SudokoBoard {
 
     }
 
+
+
     public int[][] getBoard() {
         return board;
+    }
+
+    public void setBoard(int[][] newBoard) {
+        board = newBoard.clone();
     }
 
     public void printBoard() {
@@ -31,6 +37,7 @@ public class SudokoBoard {
         }
     }
 
+    // helper function for testing
     private void printInnerBoard(int[][] state) {
         System.out.println("+---+---+---+");
         for (int i = 0; i < state.length; i++) {
@@ -84,19 +91,23 @@ public class SudokoBoard {
                     // checks if its a set number
                     for (int k = 0; k < cols; k++) {
                         // checks uniqness on y axis
-                        if (board[k][j] == board[i][j]) {
+                        if (board[k][j] == board[i][j] && i != k) {
+                            // System.out.println("i=" + i + " j=" + j + " k=" + k + " yaxis ");
                             return false;
                         }
                         // checks uniqness on x axis
-                        if (board[i][k] == board[i][j]) {
+                        if (board[i][k] == board[i][j] && j != k) {
+                            // System.out.println("i=" + i + " j=" + j + " k=" + k + " xaxis ");
                             return false;
                         }
 
                     }
                     // checks uniqness in group.
-                    for (int k = i / 3; k < groupSize; k++) {
-                        for (int l = j / 3; l < groupSize; l++) {
-                            if (board[k][l] == board[i][j] && i != k && j != l) {
+                    int xDiff = (i / groupSize) * groupSize, yDiff = (j / groupSize) * groupSize;
+                    for (int k = 0; k < groupSize; k++) {
+                        for (int l = 0; l < groupSize; l++) {
+                            if (board[k+xDiff][l+yDiff] == board[i][j] && i != k+xDiff && j != l+yDiff) {
+                                // System.out.println("i=" + i + " j=" + j + " k=" + k + " l=" + l);
                                 return false;
                             }
                         }
@@ -109,9 +120,11 @@ public class SudokoBoard {
 
     public void generateValid() {
         this.clean();
-        // done recursivly to maintain memory of viable numbers
-        int[][] state = new int[9][9];
-        generateValidRecursive(state, 0, 0);
+        generateValidRecursive(board, 0, 0);
+    }
+
+    public void generateValidFromCurrent() {
+        generateValidRecursive(board, 0, 0);
     }
 
     private int[][] deepCopy(int[][] copy) {
@@ -126,8 +139,9 @@ public class SudokoBoard {
     }
 
     private boolean generateValidRecursive(int[][] state, int x, int y) {
+        // System.out.println(x + " " + y);
         // advance row by row
-        if (x == 2) {
+        if (x == rows) {
             board = state.clone();
             return true;
         }
@@ -154,15 +168,17 @@ public class SudokoBoard {
             possibleSolutions.add(9);
             // check to see if number has already been used
             for (int k = 0; k < cols; k++) {
-                //int value of makes it remove the number, not the index of the array
+                // int value of makes it remove the number, not the index of the array
                 possibleSolutions.remove(Integer.valueOf(state[k][y]));
                 possibleSolutions.remove(Integer.valueOf(state[x][k]));
             }
             // checks uniqness in group.
-            for (int k = (x / 3)*3; k < groupSize; k++) {
-                for (int l = (y / 3) *3; l < groupSize; l++) {
+            // xdiif and ydiff find top left of group
+            int xDiff = (x / groupSize) * groupSize, yDiff = (y / groupSize) * groupSize;
+            for (int k = 0; k < groupSize; k++) {
+                for (int l = 0; l < groupSize; l++) {
                     // k and l no work good fix please
-                    possibleSolutions.remove(Integer.valueOf(state[k][l]));
+                    possibleSolutions.remove(Integer.valueOf(state[k + xDiff][l + yDiff]));
                 }
             }
             // if no solution is possible return false to start again
@@ -172,13 +188,13 @@ public class SudokoBoard {
             // choose numbers that havent been chosen yet
             while (possibleSolutions.size() != 0) {
                 // gets random number from possible solutions
-                System.out.println(x + " " + y+ " " +possibleSolutions.size());
+                // System.out.println(x + " " + y+ " " +possibleSolutions.size());
                 int tempSol = possibleSolutions.get((int) (Math.random() * possibleSolutions.size()));
                 possibleSolutions.remove(Integer.valueOf(tempSol));
                 state[x][y] = tempSol;
-                
-                printInnerBoard(state);
-                System.out.println();
+
+                // printInnerBoard(state);
+                // System.out.println();
                 // System.out.println(x + " " + y+ " " + state[x][y]);
                 if (generateValidRecursive(deepCopy(state), destX, destY)) {
                     return true;
