@@ -31,6 +31,23 @@ public class SudokoBoard {
         }
     }
 
+    private void printInnerBoard(int[][] state) {
+        System.out.println("+---+---+---+");
+        for (int i = 0; i < state.length; i++) {
+            for (int j = 0; j < state[i].length; j++) {
+                if (j % 3 == 0) {
+                    System.out.print("|");
+                }
+                System.out.print(state[i][j]);
+            }
+            System.out.println("|");
+            if (i % 3 == 2) {
+                System.out.println("+---+---+---+");
+            }
+
+        }
+    }
+
     public void scramble() {
         for (int i = 0; i < cols; i++) {
             for (int j = 0; j < rows; j++) {
@@ -93,12 +110,25 @@ public class SudokoBoard {
     public void generateValid() {
         this.clean();
         // done recursivly to maintain memory of viable numbers
-        generateValidRecursive(0, 0);
+        int[][] state = new int[9][9];
+        generateValidRecursive(state, 0, 0);
     }
 
-    private boolean generateValidRecursive(int x, int y) {
+    private int[][] deepCopy(int[][] copy) {
+        int[][] newCopy = new int[copy.length][];
+        for (int i = 0; i < copy.length; i++) {
+            newCopy[i] = new int[copy[i].length];
+            for (int j = 0; j < copy[i].length; j++) {
+                newCopy[i][j] = copy[i][j];
+            }
+        }
+        return newCopy;
+    }
+
+    private boolean generateValidRecursive(int[][] state, int x, int y) {
         // advance row by row
-        if (x == rows) {
+        if (x == 2) {
+            board = state.clone();
             return true;
         }
         int destX, destY;
@@ -109,7 +139,8 @@ public class SudokoBoard {
             destX = x;
             destY = y + 1;
         }
-        if (board[x][y] == 0) {
+
+        if (state[x][y] == 0) {
             // make list of possible numbers to input
             ArrayList<Integer> possibleSolutions = new ArrayList<Integer>();
             possibleSolutions.add(1);
@@ -123,15 +154,15 @@ public class SudokoBoard {
             possibleSolutions.add(9);
             // check to see if number has already been used
             for (int k = 0; k < cols; k++) {
-                // todo: make it so it remove the number, not the index of the array
-                // EX: remove the number 6, not the 6th element
-                possibleSolutions.remove(Integer.valueOf(board[k][y]));
-                possibleSolutions.remove(Integer.valueOf(board[x][k]));
+                //int value of makes it remove the number, not the index of the array
+                possibleSolutions.remove(Integer.valueOf(state[k][y]));
+                possibleSolutions.remove(Integer.valueOf(state[x][k]));
             }
             // checks uniqness in group.
-            for (int k = x / 3; k < groupSize; k++) {
-                for (int l = y / 3; l < groupSize; l++) {
-                    possibleSolutions.remove(Integer.valueOf(board[k][l]));
+            for (int k = (x / 3)*3; k < groupSize; k++) {
+                for (int l = (y / 3) *3; l < groupSize; l++) {
+                    // k and l no work good fix please
+                    possibleSolutions.remove(Integer.valueOf(state[k][l]));
                 }
             }
             // if no solution is possible return false to start again
@@ -141,17 +172,23 @@ public class SudokoBoard {
             // choose numbers that havent been chosen yet
             while (possibleSolutions.size() != 0) {
                 // gets random number from possible solutions
+                System.out.println(x + " " + y+ " " +possibleSolutions.size());
                 int tempSol = possibleSolutions.get((int) (Math.random() * possibleSolutions.size()));
                 possibleSolutions.remove(Integer.valueOf(tempSol));
-                board[x][y] = tempSol;
-                if (generateValidRecursive(destX, destY)) {
+                state[x][y] = tempSol;
+                
+                printInnerBoard(state);
+                System.out.println();
+                // System.out.println(x + " " + y+ " " + state[x][y]);
+                if (generateValidRecursive(deepCopy(state), destX, destY)) {
                     return true;
                 }
             }
             return false;
         }
-        System.out.println(x + " " + y+ " " + board[x][y]);
-        return generateValidRecursive(destX, destY);
+        // System.out.println(x + " " + y+ " " + state[x][y]);
+        // System.out.println("err");
+        return generateValidRecursive(state, destX, destY);
 
     }
 }
